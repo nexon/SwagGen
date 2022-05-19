@@ -147,7 +147,8 @@ extension SwaggerSpec: JSONObjectConvertible {
                 if let object = objects.first(where: { $0.name == name }) {
                     reference.resolve(with: object.value)
                 } else {
-                    print("\(name): Is Unresolved")
+                    SwaggerUnresolvedReferences.add(reference: name, for: type)
+                    print("\(name): Is Unresolved (type)")
                 }
             }
         }
