@@ -45,6 +45,10 @@ public class Reference<T: JSONObjectConvertible> {
     public var referenceName: String? {
         return getReferenceComponent(index: 2)
     }
+    
+    public var isUnresolved: Bool {
+        _value == nil
+    }
 }
 
 public enum PossibleReference<T: JSONObjectConvertible>: JSONObjectConvertible {

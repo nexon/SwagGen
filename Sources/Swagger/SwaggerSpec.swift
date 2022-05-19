@@ -131,9 +131,38 @@ extension SwaggerSpec: JSONObjectConvertible {
         operations = paths.reduce([]) { $0 + $1.operations }
 
         resolveReferences()
+        
+        grabUnresolvedReferences()
     }
 
-    mutating func resolveReferences() {
+    mutating func grabUnresolvedReferences() {
+        
+        func isUnresolved(reference: Reference<Schema>) -> Bool {
+            reference.isUnresolved
+        }
+        
+        func isReference(schema: Schema) -> Bool {
+            switch schema.type {
+            case .reference(_): return true
+            default: return false
+            }
+        }
+        
+        func getReference(schema: Schema) -> Reference<Schema>? {
+            switch schema.type {
+            case let .reference(reference): return reference
+            default: return nil
+            }
+        }
+        
+        unresolvedReferences = definitions
+            .filter { isReference(schema: $0.value) }
+            .compactMap { getReference(schema: $0.value) }
+            .filter { $0.isUnresolved }
+            .map { $0.name }
+    }
+    
+    func resolveReferences() {
 
         func resolvePossibleReference<T>(_ reference: PossibleReference<T>, objects: [SwaggerObject<T>], type: String) {
             if case let .reference(reference) = reference {
@@ -142,13 +171,14 @@ extension SwaggerSpec: JSONObjectConvertible {
         }
 
         func resolveReference<T>(_ reference: Reference<T>, objects: [SwaggerObject<T>], type: String) {
-            if reference.referenceType == type, let name = reference.referenceName {
-                if let object = objects.first(where: { $0.name == name }) {
-                    reference.resolve(with: object.value)
-                } else {
-                    unresolvedReferences.append(name)
-                }
+            if reference.referenceType == type,
+                let name = reference.referenceName,
+                let object = objects.first(where: { $0.name == name }) {
+            
+                reference.resolve(with: object.value)
             }
+            
+            
         }
 
         func resolveDefinitionReference(_ reference: Reference<Schema>) {
