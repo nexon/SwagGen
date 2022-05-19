@@ -10,6 +10,14 @@ import Foundation
 public final class SwaggerUnresolvedReferences {
     private static var _references = [String: Set<String>]()
     
+    static var references: [String: Set<String>] {
+        _references
+    }
+    
+    static func reset() {
+        _references = [String: Set<String>]()
+    }
+    
     static func add(reference: String, for object: String) {
         if !_references.keys.contains(object) {
             _references[object] = []
@@ -17,4 +25,6 @@ public final class SwaggerUnresolvedReferences {
         
         _references[object]?.insert(reference)
     }
+    
+    
 }
