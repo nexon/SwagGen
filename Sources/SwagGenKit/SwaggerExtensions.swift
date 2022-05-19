@@ -4,30 +4,30 @@ import PathKit
 import Swagger
 import Yams
 
-struct Enum {
-    let name: String
-    let cases: [Any]
-    let type: EnumType
-    let description: String?
-    let metadata: Metadata
-    let names: [String]?
+public struct Enum {
+    public let name: String
+    public let cases: [Any]
+    public let type: EnumType
+    public let description: String?
+    public let metadata: Metadata
+    public let names: [String]?
 
-    enum EnumType {
+    public enum EnumType {
         case schema(Schema)
         case item(Item)
     }
 }
 
-struct ResponseFormatter {
-    let response: Response
-    let successful: Bool
-    let name: String?
-    let statusCode: Int?
+public struct ResponseFormatter {
+    public let response: Response
+    public let successful: Bool
+    public let name: String?
+    public let statusCode: Int?
 }
 
 extension SwaggerSpec {
 
-    var operationsByTag: [String: [Swagger.Operation]] {
+    public var operationsByTag: [String: [Swagger.Operation]] {
         var dictionary: [String: [Swagger.Operation]] = [:]
 
         // add operations with no tag at ""
@@ -46,14 +46,14 @@ extension SwaggerSpec {
         return dictionary
     }
 
-    var enums: [Enum] {
+    public var enums: [Enum] {
         return parameters.compactMap { $0.value.getEnum(name: $0.name, description: $0.value.description) }
     }
 }
 
 extension Metadata {
 
-    func getEnum(name: String, type: Enum.EnumType, description: String?) -> Enum? {
+    public func getEnum(name: String, type: Enum.EnumType, description: String?) -> Enum? {
         if let enumValues = enumValues {
             return Enum(name: name, cases: enumValues.compactMap { $0 }, type: type, description: description ?? self.description, metadata: self, names: enumNames)
         }
@@ -63,7 +63,7 @@ extension Metadata {
 
 extension Schema {
 
-    var parent: SwaggerObject<Schema>? {
+    public var parent: SwaggerObject<Schema>? {
         if case let .allOf(object) = type {
             for schema in object.subschemas {
                 if case let .reference(reference) = schema.type {
@@ -74,11 +74,11 @@ extension Schema {
         return nil
     }
 
-    var properties: [Property] {
+    public var properties: [Property] {
         return requiredProperties + optionalProperties
     }
 
-    var requiredProperties: [Property] {
+    public var requiredProperties: [Property] {
         switch type {
         case let .object(objectSchema): return objectSchema.requiredProperties
         case let .allOf(allOffSchema):
@@ -92,7 +92,7 @@ extension Schema {
         }
     }
 
-    var optionalProperties: [Property] {
+    public var optionalProperties: [Property] {
         switch type {
         case let .object(objectSchema): return objectSchema.optionalProperties
         case let .allOf(allOffSchema):
@@ -106,19 +106,19 @@ extension Schema {
         return []
     }
 
-    var inheritedProperties: [Property] {
+    public var inheritedProperties: [Property] {
         return inheritedRequiredProperties + inheritedOptionalProperties
     }
 
-    var inheritedRequiredProperties: [Property] {
+    public var inheritedRequiredProperties: [Property] {
         return (parent?.value.inheritedRequiredProperties ?? []) + requiredProperties
     }
 
-    var inheritedOptionalProperties: [Property] {
+    public var inheritedOptionalProperties: [Property] {
         return (parent?.value.inheritedOptionalProperties ?? []) + optionalProperties
     }
 
-    func getEnum(name: String, description: String?) -> Enum? {
+    public func getEnum(name: String, description: String?) -> Enum? {
         switch type {
         case let .object(objectSchema):
             if case let .schema(schema) = objectSchema.additionalProperties {
@@ -137,7 +137,7 @@ extension Schema {
         return nil
     }
 
-    var enums: [Enum] {
+    public var enums: [Enum] {
         var enums = properties.compactMap { $0.schema.getEnum(name: $0.name, description: $0.schema.metadata.description) }
         if case let .object(objectSchema) = type, case let .schema(schema) = objectSchema.additionalProperties {
             enums += schema.enums
@@ -145,11 +145,11 @@ extension Schema {
         return enums
     }
 
-    var inheritedEnums: [Enum] {
+    public var inheritedEnums: [Enum] {
         return (parent?.value.inheritedEnums ?? []) + enums
     }
 
-    var generateInlineSchema: Bool {
+    public var generateInlineSchema: Bool {
         if case let .object(schema) = type,
             case let .bool(additionalProperties) = schema.additionalProperties, !additionalProperties,
             !schema.properties.isEmpty {
@@ -162,26 +162,26 @@ extension Schema {
 
 extension Swagger.Operation {
 
-    func getParameters(type: ParameterLocation) -> [Parameter] {
+    public func getParameters(type: ParameterLocation) -> [Parameter] {
         return parameters.map { $0.value }.filter { $0.location == type }
     }
 
-    var enums: [Enum] {
+    public var enums: [Enum] {
         return requestEnums + responseEnums
     }
 
-    var requestEnums: [Enum] {
+    public var requestEnums: [Enum] {
         return parameters.compactMap { $0.value.enumValue }
     }
 
-    var responseEnums: [Enum] {
+    public var responseEnums: [Enum] {
         return responses.compactMap { $0.enumValue }
     }
 }
 
 extension ObjectSchema {
 
-    var enums: [Enum] {
+    public var enums: [Enum] {
         var enums: [Enum] = []
         for property in properties {
             if let enumValue = property.schema.getEnum(name: property.name, description: property.schema.metadata.description) {
@@ -211,47 +211,47 @@ extension OperationResponse {
         }
     }
 
-    var isEnum: Bool {
+    public var isEnum: Bool {
         return enumValue != nil
     }
 
-    var enumValue: Enum? {
+    public var enumValue: Enum? {
         return response.value.schema?.getEnum(name: name, description: response.value.description)
     }
 }
 
 extension Property {
 
-    var isEnum: Bool {
+    public var isEnum: Bool {
         return enumValue != nil
     }
 
-    var enumValue: Enum? {
+    public var enumValue: Enum? {
         return schema.getEnum(name: name, description: schema.metadata.description)
     }
 }
 
 extension Parameter {
 
-    func getEnum(name: String, description: String?) -> Enum? {
+    public func getEnum(name: String, description: String?) -> Enum? {
         switch type {
         case let .body(schema): return schema.getEnum(name: name, description: description)
         case let .other(item): return item.getEnum(name: name, description: description)
         }
     }
 
-    var isEnum: Bool {
+    public var isEnum: Bool {
         return enumValue != nil
     }
 
-    var enumValue: Enum? {
+    public var enumValue: Enum? {
         return getEnum(name: name, description: description)
     }
 }
 
 extension SimpleType {
 
-    var canBeEnum: Bool {
+    public var canBeEnum: Bool {
         switch self {
         case .string, .integer, .number:
             return true
@@ -262,7 +262,7 @@ extension SimpleType {
 
 extension Item {
 
-    func getEnum(name: String, description: String?) -> Enum? {
+    public func getEnum(name: String, description: String?) -> Enum? {
 
         switch type {
         case let .array(array):

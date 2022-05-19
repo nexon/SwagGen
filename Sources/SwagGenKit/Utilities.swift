@@ -13,7 +13,7 @@ extension Path: JSONPrimitiveConvertible {
 
 extension String {
 
-    static func getFirstDifferentLine(_ string1: String, _ string2: String) -> (string1: String, string2: String, line: Int)? {
+    public static func getFirstDifferentLine(_ string1: String, _ string2: String) -> (string1: String, string2: String, line: Int)? {
         guard string1 != string2 else { return nil }
 
         let commonPrefix = string1.commonPrefix(with: string2)
@@ -34,7 +34,7 @@ extension String {
 
 extension Dictionary where Key == String, Value == Any? {
 
-    func clean() -> [String: Any] {
+    public func clean() -> [String: Any] {
         var clean: [String: Any] = [:]
         for (key, value) in self {
             if let value = value {
@@ -50,7 +50,7 @@ extension Dictionary where Key == String, Value == Any? {
     }
 }
 
-func + (lhs: [String: Any?], rhs: [String: Any?]) -> [String: Any] {
+public func + (lhs: [String: Any?], rhs: [String: Any?]) -> [String: Any] {
     var combined = lhs.clean()
     let cleanRight = rhs.clean()
     for (key, value) in cleanRight {
@@ -113,7 +113,7 @@ extension String {
         return acronymStrings.contains(uppercased())
     }
 
-    func lowerCamelCased() -> String {
+    public func lowerCamelCased() -> String {
 
         let string = camelCaseSeperators()
 
@@ -124,7 +124,7 @@ extension String {
         return string.mapFirstChar { $0.lowercased() }
     }
 
-    func upperCamelCased() -> String {
+    public func upperCamelCased() -> String {
         if acronymStrings.contains(uppercased()), !hasSeparator {
             return uppercased()
         }

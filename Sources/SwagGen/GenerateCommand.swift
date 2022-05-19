@@ -209,9 +209,9 @@ extension Generator.Clean: ConvertibleFromString {
 
     public static func convert(from: String) -> Generator.Clean? {
         switch from {
-        case "true", "yes", "all": return .all
-        case "false", "no", "none": return .none
-        case "leave-dot-files", "leaveDotFiles", "leave.files": return .leaveDotFiles
+        case "true", "yes", "all": return Generator.Clean.all
+        case "false", "no", "none": return Generator.Clean.none
+        case "leave-dot-files", "leaveDotFiles", "leave.files": return Generator.Clean.leaveDotFiles
         default: return nil
         }
     }
