@@ -19,6 +19,7 @@ public struct SwaggerSpec {
     public let definitions: [SwaggerObject<Schema>]
     public let parameters: [SwaggerObject<Parameter>]
     public let responses: [SwaggerObject<Response>]
+    public var unresolvedReferences: [String] = []
 
     public let operations: [Operation]
 
@@ -132,7 +133,7 @@ extension SwaggerSpec: JSONObjectConvertible {
         resolveReferences()
     }
 
-    func resolveReferences() {
+    mutating func resolveReferences() {
 
         func resolvePossibleReference<T>(_ reference: PossibleReference<T>, objects: [SwaggerObject<T>], type: String) {
             if case let .reference(reference) = reference {
@@ -141,10 +142,12 @@ extension SwaggerSpec: JSONObjectConvertible {
         }
 
         func resolveReference<T>(_ reference: Reference<T>, objects: [SwaggerObject<T>], type: String) {
-            if reference.referenceType == type,
-                let name = reference.referenceName,
-                let object = objects.first(where: { $0.name == name }) {
-                reference.resolve(with: object.value)
+            if reference.referenceType == type, let name = reference.referenceName {
+                if let object = objects.first(where: { $0.name == name }) {
+                    reference.resolve(with: object.value)
+                } else {
+                    unresolvedReferences.append(name)
+                }
             }
         }
 
@@ -196,6 +199,7 @@ extension SwaggerSpec: JSONObjectConvertible {
         }
 
         definitions.forEach { resolveSchema($0.value) }
+        
         parameters.forEach { resolveParamater($0.value) }
         paths.forEach { path in
             path.parameters.forEach(resolveParameterReference)
