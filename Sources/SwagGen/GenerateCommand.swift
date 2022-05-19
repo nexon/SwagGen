@@ -119,7 +119,12 @@ class GenerateCommand: Command {
                 ("security definition", spec.securityDefinitions.count),
             ], pluralise: true
         )
-        standardOut("Loaded spec: \"\(spec.info.title)\" - \(specCounts)")
+        if let info = spec.info {
+            standardOut("Loaded spec: \"\(info.title)\" - \(specCounts)")
+        } else {
+            standardOut("Loaded Spec \(specCounts)")
+        }
+        
 
         //    let invalidReferences = Array(Set(spec.invalidReferences)).sorted()
         //    for reference in invalidReferences {

@@ -7,7 +7,7 @@ public struct SwaggerSpec {
 
     public let json: [String: Any]
     public let version: String
-    public let info: Info
+    public let info: Info?
     public let host: URL?
     public let basePath: String?
     public let schemes: [TransferScheme]?
@@ -88,7 +88,7 @@ extension SwaggerSpec: JSONObjectConvertible {
             throw SwaggerError.invalidVersion(version)
         }
 
-        info = try jsonDictionary.json(atKeyPath: "info")
+        info = jsonDictionary.json(atKeyPath: "info")
         host = jsonDictionary.json(atKeyPath: "host")
         basePath = jsonDictionary.json(atKeyPath: "basePath")
         schemes = jsonDictionary.json(atKeyPath: "schemes")
@@ -131,6 +131,7 @@ extension SwaggerSpec: JSONObjectConvertible {
         operations = paths.reduce([]) { $0 + $1.operations }
 
         resolveReferences()
+        
     }
     
     func resolveReferences() {
