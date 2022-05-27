@@ -16,7 +16,7 @@ public struct SwaggerSpec {
     public let paths: [Path]
     public let securityDefinitions: [SecuritySchema]
     public let securityRequirements: [SecurityRequirement]?
-    public let definitions: [SwaggerObject<Schema>]
+    public var definitions: [SwaggerObject<Schema>]
     public let parameters: [SwaggerObject<Parameter>]
     public let responses: [SwaggerObject<Response>]
     public var unresolvedReferences: [String] = []

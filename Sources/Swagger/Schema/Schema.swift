@@ -14,6 +14,17 @@ public enum SchemaType {
     case any
 }
 
+extension Schema {
+    public var isUnresolved: Bool {
+        switch type {
+        case let .reference(ref):
+            return ref.isUnresolved
+        default:
+            return false
+        }
+    }
+}
+
 extension Schema: JSONObjectConvertible {
 
     public init(jsonDictionary: JSONDictionary) throws {

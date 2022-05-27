@@ -43,6 +43,15 @@ public struct Operation {
 }
 
 extension Operation {
+    public var isUnresolved: Bool {
+        pathParameters.contains(where: \.isUnresolved) ||
+        operationParameters.contains(where: \.isUnresolved) ||
+        (bodyParam?.isUnresolved ?? false) ||
+        parameters.contains(where: \.isUnresolved)
+    }
+}
+
+extension Operation {
 
     public init(path: String, method: Method, pathParameters: [PossibleReference<Parameter>], jsonDictionary: JSONDictionary) throws {
         json = jsonDictionary

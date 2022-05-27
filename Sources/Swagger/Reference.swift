@@ -84,4 +84,13 @@ public enum PossibleReference<T: JSONObjectConvertible>: JSONObjectConvertible {
             self = .value(try T(jsonDictionary: jsonDictionary))
         }
     }
+    
+    public var isUnresolved: Bool {
+        switch self {
+        case let .reference(ref):
+            return ref.isUnresolved
+        case let .value(val):
+            return val == nil
+        }
+    }
 }

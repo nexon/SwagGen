@@ -31,6 +31,17 @@ public enum ParameterType {
     case other(item: Item)
 }
 
+extension Parameter {
+    public var isUnresolved: Bool {
+        switch type {
+        case let .body(schema: schema):
+            return schema.isUnresolved
+        default:
+            return false
+        }
+    }
+}
+
 extension Parameter: JSONObjectConvertible {
 
     public init(jsonDictionary: JSONDictionary) throws {

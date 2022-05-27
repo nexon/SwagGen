@@ -7,6 +7,13 @@ public struct Path {
     public let parameters: [PossibleReference<Parameter>]
 }
 
+extension Path {
+    public var isUnresolved: Bool {
+        operations.contains(where: \.isUnresolved) ||
+        parameters.contains(where: \.isUnresolved)
+    }
+}
+
 extension Path: NamedMappable {
 
     public init(name: String, jsonDictionary: JSONDictionary) throws {
